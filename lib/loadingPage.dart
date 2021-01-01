@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
       title: 'pharfo',
       theme: ThemeData(
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => LandingPage()));
               },
-              child: Image.asset('assets/images/Logo-2.png',
+              child: Image.asset('assets/images/logo.png',
                   width: MediaQuery.of(context).size.width / 3.0),
             )
           ],

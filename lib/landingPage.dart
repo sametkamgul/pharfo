@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:testapp/addCompanyPage.dart';
+import 'package:testapp/galleryPage.dart';
 
 class Constants {
   Constants._();
   static const double padding = 20;
   static const double avatarRadius = 45;
+}
+
+// Data transfer class for folder-company info
+class CompanyData {
+  final String companyID;
+  CompanyData(this.companyID);
 }
 
 class LandingPage extends StatelessWidget {
@@ -44,6 +51,8 @@ class LandingPage extends StatelessWidget {
           new Padding(
             padding: EdgeInsets.all(10),
           ),
+
+          // ListView-List of Companies
           Expanded(
               flex: 10,
               child: new ListView.builder(
@@ -56,6 +65,9 @@ class LandingPage extends StatelessWidget {
                         // height: 30,
                         onPressed: () {
                           print('clicked to the ' + companyList[index]);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  GalleryPage(companyID: companyList[index])));
                         },
                         child: Text(
                           companyList[index].toString(),
@@ -70,6 +82,7 @@ class LandingPage extends StatelessWidget {
                       ),
                     );
                   })),
+          Padding(padding: EdgeInsets.all(8.0)),
 
           // Add-New Company Button
           new FlatButton(
@@ -85,17 +98,19 @@ class LandingPage extends StatelessWidget {
             },
             child: new Icon(
               Icons.add,
-              size: 48.0,
+              size: 60.0,
               color: Colors.white,
             ),
-            height: 50.0,
+            height: 60.0,
             color: Color(0xFF514949),
             shape: CircleBorder(),
           ),
 
+          Padding(padding: EdgeInsets.all(8.0)),
+
           // Upload-Progress indicator
           new Container(
-            height: 16.0,
+            height: 8.0,
             child: LinearProgressIndicator(
               backgroundColor: Color(0xFF514949),
               valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFFFC7E7E)),
