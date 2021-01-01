@@ -1,6 +1,6 @@
-# testapp
+# pharfo
 
-A new Flutter project.
+pharfo is a simple photo organizer.
 
 ## Getting Started
 

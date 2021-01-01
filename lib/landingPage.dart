@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/addCompanyPage.dart';
-import 'package:testapp/galleryPage.dart';
+import 'package:pharfo/addCompanyPage.dart';
+import 'package:pharfo/galleryPage.dart';
 
 class Constants {
   Constants._();
