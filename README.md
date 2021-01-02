@@ -13,4 +13,5 @@ camera: ^0.5.8+17
 - Taking pictures and saving to the local storage
 
 ## Contributors 
-Samet Kamğul, Edip Öz, Onur Keser
+Design && Coding: Samet Kamğul
+Testing: Edip Öz, Onur Keser
