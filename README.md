@@ -12,6 +12,9 @@ camera: ^0.5.8+17
 ## Capabilities
 - Taking pictures and saving to the local storage
 
+## TODOs
+- Saving image to gallery
+
 ## Contributors 
 Design && Coding: Samet Kamğul
 Testing: Edip Öz, Onur Keser
