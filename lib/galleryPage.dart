@@ -1,7 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'testcamera.dart';
 
 class GalleryPage extends StatelessWidget {
   final String companyID;
+  CameraDescription firstCamera;
   GalleryPage({Key key, @required this.companyID}) : super(key: key);
   double _downloadStatus = 0.25;
 
@@ -41,11 +44,21 @@ class GalleryPage extends StatelessWidget {
 
             // Gallery Section
 
-            // Add Photo Button
+            // Take Photo Button
             FlatButton(
-              onPressed: () {
+              onPressed: () async {
                 print('photo capture button clicked!!!');
-                // open the camera here!!!
+
+                //  getting the camera descriptions
+
+                final cameras = await availableCameras();
+                this.firstCamera = cameras[0];
+                print(this.firstCamera);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            TakePictureScreen(camera: cameras[1])));
               },
               child: Image.asset('assets/images/button-camera.png',
                   width: MediaQuery.of(context).size.width / 3.0),
