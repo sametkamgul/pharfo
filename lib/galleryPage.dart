@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'testcamera.dart';
 
+// ignore: must_be_immutable
 class GalleryPage extends StatelessWidget {
   final String companyID;
   CameraDescription firstCamera;
@@ -29,11 +30,10 @@ class GalleryPage extends StatelessWidget {
           child: new Column(
               children: [
             // Page Header
-
             new Padding(
               padding: EdgeInsets.all(20),
             ),
-            new Expanded(
+            new Container(
                 child: Text(
               '$companyID',
               style: TextStyle(fontSize: 36.0),
@@ -43,6 +43,24 @@ class GalleryPage extends StatelessWidget {
             ),
 
             // Gallery Section
+            Expanded(
+              child: Container(
+                height: 200,
+                child: GridView.count(
+                  // Create a grid with 2 columns. If you change the scrollDirection to
+                  // horizontal, this produces 2 rows.
+                  crossAxisCount: 3,
+                  // Generate 100 widgets that display their index in the List.
+                  children: List.generate(400, (index) {
+                    return Center(
+                      child: Text(
+                        'Item $index',
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
 
             // Take Photo Button
             FlatButton(
@@ -81,7 +99,7 @@ class GalleryPage extends StatelessWidget {
               ),
             )
           ],
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center)),
     );
   }

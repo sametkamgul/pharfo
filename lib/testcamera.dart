@@ -5,8 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
-import 'package:gallery_saver/gallery_saver.dart';
-import 'package:pharfo/landingPage.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -77,10 +75,20 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Take a picture')),
-      // Wait until the controller is initialized before displaying the
-      // camera preview. Use a FutureBuilder to display a loading spinner
-      // until the controller has finished initializing.
+      appBar: new PreferredSize(
+          preferredSize: const Size.fromHeight(200),
+          child: Row(children: [
+            // Navigation Back Button
+            IconButton(
+              iconSize: 48.0,
+              icon: Icon(Icons.arrow_back_ios_rounded),
+              onPressed: () {
+                print('back button is pressed!!!');
+                Navigator.of(context).pop();
+              },
+            ),
+          ], mainAxisAlignment: MainAxisAlignment.start)),
+      backgroundColor: Color(0xFFFFDFCD),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
@@ -106,46 +114,34 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             // Construct the path where the image should be saved using the
             // pattern package.
             filename = '${DateTime.now()}.png';
-            final path = join(
-              // Store the picture in the temp directory.
-              // Find the temp directory using the `path_provider` plugin.
-              (await getApplicationDocumentsDirectory()).path,
-              filename,
-            );
 
-            // Attempt to take a picture and log where it's been saved.
-
-            // creating folder if not exists
+            // INFO: creating folder if not exists. this will move!!!
             final myDir = new Directory(join(
-                (await getApplicationDocumentsDirectory()).path,
+                (await getExternalStorageDirectory()).path,
                 'Media',
                 widget.companyName));
             myDir.exists().then((isThere) {
               if (isThere) {
-                print('exists: ' + join(myDir.path, filename));
-                // GallerySaver.saveImage(join(myDir.path, filename));
+                print('exists: ' + myDir.path);
               } else {
                 print('non-existent. Directory is creating...');
-                myDir.create(recursive: true)
-                    // The created directory is returned as a Future.
-                    .then((directory) {
-                  print(directory.path);
+                myDir.create(recursive: true).then((directory) {
+                  print('path:' + directory.path);
                 });
               }
             });
 
+            // Taking and saving picture to storage
             await _controller
                 .takePicture(join(myDir.path, filename))
                 .then((value) => {
                       // GallerySaver.saveImage(join(myDir.path, filename)),
-                      print('testttttt'),
+                      print('INFO: ' +
+                          filename +
+                          ' is saved to the ->' +
+                          myDir.path),
                     });
 
-            print('path is here: ' + path);
-
-            print('TEST:' + widget.companyName);
-
-            print('image is saved to here: ' + path);
             // If the picture was taken, display it on a new screen.
             // Navigator.push(
             //   context,
