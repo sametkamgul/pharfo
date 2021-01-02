@@ -5,6 +5,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:pharfo/landingPage.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -21,9 +23,9 @@ Future<void> main() async {
     MaterialApp(
       theme: ThemeData.dark(),
       home: TakePictureScreen(
-        // Pass the appropriate camera to the TakePictureScreen widget.
-        camera: firstCamera,
-      ),
+          // Pass the appropriate camera to the TakePictureScreen widget.
+          camera: firstCamera,
+          companyName: 'testttt'),
     ),
   );
 }
@@ -31,10 +33,12 @@ Future<void> main() async {
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
+  final String companyName;
 
   const TakePictureScreen({
     Key key,
     @required this.camera,
+    @required this.companyName,
   }) : super(key: key);
 
   @override
@@ -43,6 +47,8 @@ class TakePictureScreen extends StatefulWidget {
 
 class TakePictureScreenState extends State<TakePictureScreen> {
   CameraController _controller;
+  Directory directory;
+  String filename;
   Future<void> _initializeControllerFuture;
 
   @override
@@ -99,24 +105,54 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             // Construct the path where the image should be saved using the
             // pattern package.
+            filename = '${DateTime.now()}.png';
             final path = join(
               // Store the picture in the temp directory.
               // Find the temp directory using the `path_provider` plugin.
               (await getApplicationDocumentsDirectory()).path,
-              '${DateTime.now()}.png',
+              filename,
             );
 
             // Attempt to take a picture and log where it's been saved.
-            await _controller.takePicture(path);
+
+            // creating folder if not exists
+            final myDir = new Directory(join(
+                (await getApplicationDocumentsDirectory()).path,
+                'Media',
+                widget.companyName));
+            myDir.exists().then((isThere) {
+              if (isThere) {
+                print('exists: ' + join(myDir.path, filename));
+                // GallerySaver.saveImage(join(myDir.path, filename));
+              } else {
+                print('non-existent. Directory is creating...');
+                myDir.create(recursive: true)
+                    // The created directory is returned as a Future.
+                    .then((directory) {
+                  print(directory.path);
+                });
+              }
+            });
+
+            await _controller
+                .takePicture(join(myDir.path, filename))
+                .then((value) => {
+                      // GallerySaver.saveImage(join(myDir.path, filename)),
+                      print('testttttt'),
+                    });
+
             print('path is here: ' + path);
 
+            print('TEST:' + widget.companyName);
+
+            print('image is saved to here: ' + path);
             // If the picture was taken, display it on a new screen.
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(imagePath: path),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => DisplayPictureScreen(imagePath: path),
+            //   ),
+            // );
           } catch (e) {
             // If an error occurs, log the error to the console.
             print(e);

@@ -57,8 +57,11 @@ class GalleryPage extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            TakePictureScreen(camera: cameras[1])));
+                      builder: (context) => TakePictureScreen(
+                        camera: cameras[1],
+                        companyName: companyID,
+                      ),
+                    ));
               },
               child: Image.asset('assets/images/button-camera.png',
                   width: MediaQuery.of(context).size.width / 3.0),
