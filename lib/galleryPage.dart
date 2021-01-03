@@ -1,16 +1,50 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'testcamera.dart';
+import 'package:path/path.dart' show join;
+import 'dart:io';
 
-// ignore: must_be_immutable
 class GalleryPage extends StatelessWidget {
   final String companyID;
+  String directory;
+  List fileList = [];
   CameraDescription firstCamera;
   GalleryPage({Key key, @required this.companyID}) : super(key: key);
   double _downloadStatus = 0.25;
 
+  _loadLocalImage(String _companyName) async {
+    print('$_companyName gallery is started...');
+    Image.file(
+        File(join((await getExternalStorageDirectory()).path, companyID)));
+  }
+
+  dynamic _listofFiles() async {
+    directory = (await getExternalStorageDirectory()).path;
+
+    fileList = Directory("$directory/Media/$companyID/")
+        .listSync(); //use your folder name insted of resume.
+    // print(fileList);
+    // print(fileList.length);
+    return fileList;
+  }
+
+  int _getFileListLength() {
+    print(fileList.length);
+    return 5;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Read a jpeg image from file.
+    // _loadLocalImage(companyID);
+    try {
+      _listofFiles();
+    } catch (e) {
+      print('HATA: ' + e);
+    }
+
+    print('TEST' + fileList.toString());
     return Scaffold(
       appBar: new PreferredSize(
           preferredSize: const Size.fromHeight(200),
@@ -51,10 +85,13 @@ class GalleryPage extends StatelessWidget {
                   // horizontal, this produces 2 rows.
                   crossAxisCount: 3,
                   // Generate 100 widgets that display their index in the List.
-                  children: List.generate(400, (index) {
-                    return Center(
-                      child: Text(
-                        'Item $index',
+                  children: List.generate(_getFileListLength(), (index) {
+                    return Container(
+                      child: Image.file(
+                        new File(
+                            '/storage/emulated/0/Android/data/com.example.pharfo/files/Media/Ege Üniversitesi/2021-01-03 03:30:23.235422.png'),
+                        fit: BoxFit.fill,
+                        alignment: Alignment.center,
                       ),
                     );
                   }),

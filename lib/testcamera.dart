@@ -23,7 +23,7 @@ Future<void> main() async {
       home: TakePictureScreen(
           // Pass the appropriate camera to the TakePictureScreen widget.
           camera: firstCamera,
-          companyName: 'testttt'),
+          companyName: ''),
     ),
   );
 }
