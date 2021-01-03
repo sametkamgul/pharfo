@@ -66,7 +66,7 @@ class GalleryPageState extends State<GalleryPage> {
     // }
 
     _listofFiles();
-    print(fileList[0]);
+    // print(fileList[0]);
 
     return Scaffold(
       appBar: new PreferredSize(

@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
+import 'package:path_provider/path_provider.dart';
 import 'package:pharfo/addCompanyPage.dart';
 import 'package:pharfo/galleryPage.dart';
+
+import 'package:path/path.dart' show join;
 
 class Constants {
   Constants._();
@@ -14,28 +20,75 @@ class CompanyData {
   CompanyData(this.companyID);
 }
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends StatefulWidget {
+  @override
+  LandingPageState createState() => LandingPageState();
+}
+
+class LandingPageState extends State<LandingPage> {
+  String directory;
+  List folderList = new List();
+  final List<String> companyList = <String>[
+    'Ege Üniversitesi',
+    'Onmuş A.Ş.',
+    '9 Eylül Üniversitesi',
+    'Mate Pazarlama Teknolojileri A.Ş.',
+    'Apple',
+    'Samsung',
+    'Sony',
+    'Xiaomi',
+    'Microsoft',
+    'Aselsan',
+    'Tesla',
+    'IBM',
+    'Lenovo',
+    'Asus'
+  ];
+
+  // final List<int> companyPath = <int>[1, 2, 3, 4, 5, 6, 7, 8];
+  double _downloadStatus = 0.25;
+
+  _createDirectories() async {
+    // INFO: creating folder if not exists. this will move!!!
+    final myDir = new Directory(join(
+        (await getExternalStorageDirectory()).path, 'Media', companyList[0]));
+    myDir.exists().then((isThere) {
+      if (isThere) {
+        print('exists: ' + myDir.path);
+      } else {
+        print('non-existent. Directory is creating...');
+        myDir.create(recursive: true).then((directory) {
+          print('path:' + directory.path);
+        });
+      }
+    });
+  }
+
+  dynamic _listofFiles() async {
+    directory = (await getExternalStorageDirectory()).path;
+
+    folderList = Directory(directory)
+        .listSync(recursive: true, followLinks: true)
+        .toList();
+    for (int x = 0; x < folderList.length; x++) {
+      if (folderList[x] is Directory) {
+        print(x.toString() + ' ' + folderList[x].toString());
+      } else {
+        print(x.toString() + ' ' + folderList[x].toString());
+      }
+    }
+
+    // FIXME: refreshing the page here
+    // setState(() {});
+    return folderList;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<String> companyList = <String>[
-      'Ege Üniversitesi',
-      'Onmuş A.Ş.',
-      '9 Eylül Üniversitesi',
-      'Mate Pazarlama Teknolojileri A.Ş.',
-      'Apple',
-      'Samsung',
-      'Sony',
-      'Xiaomi',
-      'Microsoft',
-      'Aselsan',
-      'Tesla',
-      'IBM',
-      'Lenovo',
-      'Asus'
-    ];
-    // final List<int> companyPath = <int>[1, 2, 3, 4, 5, 6, 7, 8];
-    double _downloadStatus = 0.25;
-
+    _createDirectories();
+    _listofFiles();
+    // print(folderList);
+    // print(folderList.length);
     return Scaffold(
       backgroundColor: Color(0xFFFFDFCD),
       body: Column(
