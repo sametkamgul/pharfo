@@ -2,49 +2,72 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'testcamera.dart';
-import 'package:path/path.dart' show join;
 import 'dart:io';
 
-class GalleryPage extends StatelessWidget {
+Future<void> main() async {
+  runApp(
+    MaterialApp(
+        theme: ThemeData.dark(),
+        home: GalleryPage(
+          // Pass the appropriate camera to the TakePictureScreen widget.
+          companyID: 'firstCamera',
+        )),
+  );
+}
+
+class GalleryPage extends StatefulWidget {
   final String companyID;
-  String directory;
+
+  const GalleryPage({
+    Key key,
+    @required this.companyID,
+  }) : super(key: key);
+
+  @override
+  GalleryPageState createState() => GalleryPageState();
+}
+
+class GalleryPageState extends State<GalleryPage> {
+  String directory = '';
+  String companyID = '';
   List fileList = [];
   CameraDescription firstCamera;
-  GalleryPage({Key key, @required this.companyID}) : super(key: key);
   double _downloadStatus = 0.25;
 
-  _loadLocalImage(String _companyName) async {
-    print('$_companyName gallery is started...');
-    Image.file(
-        File(join((await getExternalStorageDirectory()).path, companyID)));
+  void initState() {
+    super.initState();
   }
+
+  // _loadLocalImage(String _companyName) async {
+  //   print('$_companyName gallery is started...');
+  //   Image.file(
+  //       File(join((await getExternalStorageDirectory()).path, _companyName)));
+  // }
 
   dynamic _listofFiles() async {
     directory = (await getExternalStorageDirectory()).path;
 
-    fileList = Directory("$directory/Media/$companyID/")
+    fileList = Directory("$directory/Media/" + widget.companyID)
         .listSync(); //use your folder name insted of resume.
-    // print(fileList);
-    // print(fileList.length);
-    return fileList;
-  }
 
-  int _getFileListLength() {
-    print(fileList.length);
-    return 5;
+    // FIXME: refreshing the page here
+    setState(() {});
+    return fileList;
   }
 
   @override
   Widget build(BuildContext context) {
     // Read a jpeg image from file.
     // _loadLocalImage(companyID);
-    try {
-      _listofFiles();
-    } catch (e) {
-      print('HATA: ' + e);
-    }
+    // try {
+    //   _listofFiles();
+    // } catch (e) {
+    //   print('HATA: ' + e);
+    // }
 
-    print('TEST' + fileList.toString());
+    _listofFiles();
+    print(fileList[0]);
+
     return Scaffold(
       appBar: new PreferredSize(
           preferredSize: const Size.fromHeight(200),
@@ -69,7 +92,7 @@ class GalleryPage extends StatelessWidget {
             ),
             new Container(
                 child: Text(
-              '$companyID',
+              widget.companyID,
               style: TextStyle(fontSize: 36.0),
             )),
             new Padding(
@@ -79,20 +102,29 @@ class GalleryPage extends StatelessWidget {
             // Gallery Section
             Expanded(
               child: Container(
+                padding: EdgeInsets.all(5.0),
                 height: 200,
                 child: GridView.count(
                   // Create a grid with 2 columns. If you change the scrollDirection to
                   // horizontal, this produces 2 rows.
                   crossAxisCount: 3,
                   // Generate 100 widgets that display their index in the List.
-                  children: List.generate(_getFileListLength(), (index) {
+                  children: List.generate(fileList.length, (index) {
                     return Container(
                       child: Image.file(
-                        new File(
-                            '/storage/emulated/0/Android/data/com.example.pharfo/files/Media/Ege Üniversitesi/2021-01-03 03:30:23.235422.png'),
-                        fit: BoxFit.fill,
+                        fileList[index],
+                        // new File(
+                        //     '/storage/emulated/0/Android/data/com.example.pharfo/files/Media/Ege Üniversitesi/2021-01-03 03:30:23.235422.png'),
+                        fit: BoxFit.contain,
                         alignment: Alignment.center,
                       ),
+                      decoration: BoxDecoration(
+                          color: Color(0xFF514949),
+                          border: Border.all(
+                              color: Color(0xFF514949),
+                              width: 5.0,
+                              style: BorderStyle.solid),
+                          borderRadius: BorderRadius.circular(20.0)),
                     );
                   }),
                 ),
@@ -114,7 +146,7 @@ class GalleryPage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => TakePictureScreen(
                         camera: cameras[1],
-                        companyName: companyID,
+                        companyName: widget.companyID,
                       ),
                     ));
               },

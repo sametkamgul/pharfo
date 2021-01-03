@@ -56,7 +56,7 @@ class LandingPage extends StatelessWidget {
           Expanded(
               flex: 10,
               child: new ListView.builder(
-                  padding: const EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(16),
                   itemCount: companyList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
