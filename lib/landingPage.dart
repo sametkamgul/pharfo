@@ -27,26 +27,55 @@ class LandingPage extends StatefulWidget {
 
 class LandingPageState extends State<LandingPage> {
   String directory;
-  List folderList = new List();
-  final List<String> companyList = <String>[
-    'Ege Üniversitesi',
-    'Onmuş A.Ş.',
-    '9 Eylül Üniversitesi',
-    'Mate Pazarlama Teknolojileri A.Ş.',
-    'Apple',
-    'Samsung',
-    'Sony',
-    'Xiaomi',
-    'Microsoft',
-    'Aselsan',
-    'Tesla',
-    'IBM',
-    'Lenovo',
-    'Asus'
-  ];
-
-  // final List<int> companyPath = <int>[1, 2, 3, 4, 5, 6, 7, 8];
   double _downloadStatus = 0.25;
+  List folderList = new List();
+  List companyList = new List();
+  String applicationDirectory = '';
+
+  void initState() {
+    super.initState();
+  }
+
+  _listFoldersRefresh() async {
+    // refresh page
+    // companyList.clear();
+    print('ref p here...');
+    directory = (await getExternalStorageDirectory()).path;
+    folderList = Directory(directory)
+        .listSync(recursive: true, followLinks: true)
+        .toList();
+    for (int x = 0; x < folderList.length; x++) {
+      if (folderList[x] is Directory && folderList[x] != folderList[0]) {
+        print(x.toString() + ' ' + folderList[x].toString());
+        // companyList.add((folderList[x]).path);
+        print(folderList[x].toString() +
+            ' -- folder is added to the dynamic list');
+      } else {
+        // print(x.toString() + ' ' + folderList[x].toString());
+      }
+    }
+
+    for (int x = 1; x < folderList.length; x++) {
+      if (folderList.length > 1 && folderList[x] is Directory) {
+        // there is a sub-folder
+        applicationDirectory = folderList[x].path;
+        var _t = applicationDirectory.split((folderList[0]).path).toString();
+        print(_t);
+        _t = _t.substring(4, _t.length - 1);
+        companyList.add(_t);
+        companyList = companyList.toSet().toList();
+      } else {
+        // null
+      }
+    }
+
+    // setState(() {});   //refresh page brute-froce
+  }
+
+  _getApplicationDirectory() async {
+    String _dir = (await getExternalStorageDirectory()).path;
+    print('main dir is->' + _dir);
+  }
 
   _createDirectories() async {
     // INFO: creating folder if not exists. this will move!!!
@@ -71,10 +100,10 @@ class LandingPageState extends State<LandingPage> {
         .listSync(recursive: true, followLinks: true)
         .toList();
     for (int x = 0; x < folderList.length; x++) {
-      if (folderList[x] is Directory) {
+      if (folderList[x] is Directory && folderList[x] == folderList[0]) {
         print(x.toString() + ' ' + folderList[x].toString());
       } else {
-        print(x.toString() + ' ' + folderList[x].toString());
+        // print(x.toString() + ' ' + folderList[x].toString());
       }
     }
 
@@ -85,8 +114,10 @@ class LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    _createDirectories();
+    // _createDirectories();
+    _getApplicationDirectory();
     _listofFiles();
+    _listFoldersRefresh();
     // print(folderList);
     // print(folderList.length);
     return Scaffold(
