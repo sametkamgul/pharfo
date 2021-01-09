@@ -38,7 +38,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Timer(
+    //     Duration(seconds: 3),
+    //     () => {
+    //           print('test'),
+    //           Navigator.push(context,
+    //               MaterialPageRoute(builder: (context) => LandingPage())),
+    //         });
     return Scaffold(
       backgroundColor: Color(0xFFFFDFCD),
       body: Center(

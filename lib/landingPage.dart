@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:pharfo/addCompanyPage.dart';
@@ -43,9 +44,13 @@ class LandingPageState extends State<LandingPage> {
 
     directory = join((await getExternalStorageDirectory()).path, 'Media');
     applicationDirectory = directory;
-    folderList = Directory(directory)
-        .listSync(recursive: true, followLinks: true)
-        .toList();
+    try {
+      folderList = Directory(directory)
+          .listSync(recursive: true, followLinks: true)
+          .toList();
+    } catch (e) {
+      // print('error');
+    }
 
     for (int x = 0; x < folderList.length; x++) {
       if (folderList.length > 1 && folderList[x] is Directory) {
@@ -63,13 +68,12 @@ class LandingPageState extends State<LandingPage> {
         // null
       }
     }
-
-    setState(() {}); //refresh page brute-froce
+    // FIXME: refreshing the page here
+    setState(() {});
   }
 
   _getApplicationDirectory() async {
     String _dir = (await getExternalStorageDirectory()).path;
-    // print('main dir is->' + _dir);
   }
 
   _createMediaDirectory() async {
@@ -88,21 +92,21 @@ class LandingPageState extends State<LandingPage> {
     });
   }
 
-  _createDirectories() async {
-    // INFO: creating folder if not exists. this will move!!!
-    final myDir = new Directory(join(
-        (await getExternalStorageDirectory()).path, 'Media', companyList[0]));
-    myDir.exists().then((isThere) {
-      if (isThere) {
-        print('exists: ' + myDir.path);
-      } else {
-        print('non-existent. Directory is creating...');
-        myDir.create(recursive: true).then((directory) {
-          print('path:' + directory.path);
-        });
-      }
-    });
-  }
+  // _createDirectories() async {
+  //   // INFO: creating folder if not exists. this will move!!!
+  //   final myDir = new Directory(join(
+  //       (await getExternalStorageDirectory()).path, 'Media', companyList[0]));
+  //   myDir.exists().then((isThere) {
+  //     if (isThere) {
+  //       print('exists: ' + myDir.path);
+  //     } else {
+  //       print('non-existent. Directory is creating...');
+  //       myDir.create(recursive: true).then((directory) {
+  //         print('path:' + directory.path);
+  //       });
+  //     }
+  //   });
+  // }
 
   dynamic _listofFiles() async {
     directory = (await getExternalStorageDirectory()).path;
@@ -125,10 +129,13 @@ class LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    SystemChrome.setEnabledSystemUIOverlays([]);
     try {
       _getApplicationDirectory();
-      _listofFiles();
-      _listFoldersRefresh();
     } on FileSystemException {
       print('Media directory is not found');
       _createMediaDirectory();
@@ -136,9 +143,26 @@ class LandingPageState extends State<LandingPage> {
       print(e.toString());
     }
 
+    try {
+      _listofFiles();
+    } on FileSystemException {
+      print('there are no directory to list');
+      throw Exception('testing....');
+    } catch (e) {
+      print(e.toString());
+    }
+
+    try {
+      _listFoldersRefresh();
+    } on FileSystemException {
+      print('there are no directory to refresh view');
+    } catch (e) {
+      print(e.toString());
+    }
+
     // print(folderList);
     // print(folderList.length);
-    return Scaffold(
+    var scaffold = Scaffold(
       backgroundColor: Color(0xFFFFDFCD),
       body: Column(
         children: [
@@ -225,5 +249,6 @@ class LandingPageState extends State<LandingPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
       ),
     );
+    return scaffold;
   }
 }

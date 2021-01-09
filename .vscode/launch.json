@@ -8,7 +8,7 @@
             "name": "pharfo",
             "request": "launch",
             "type": "dart",
-            "program": "${workspaceFolder}/lib/loadingPage.dart"    // INFO: define the starting page here
+            "program": "${workspaceFolder}/lib/main.dart"    // INFO: define the starting page here
         }
     ]
 }
