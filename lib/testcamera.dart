@@ -48,6 +48,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   Directory directory;
   String filename;
   Future<void> _initializeControllerFuture;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -58,7 +59,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.medium,
+      ResolutionPreset.ultraHigh,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -74,86 +75,103 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: new PreferredSize(
-          preferredSize: const Size.fromHeight(200),
-          child: Row(children: [
-            // Navigation Back Button
-            IconButton(
-              iconSize: 48.0,
-              icon: Icon(Icons.arrow_back_ios_rounded),
-              onPressed: () {
-                print('back button is pressed!!!');
-                Navigator.of(context).pop();
-              },
-            ),
-          ], mainAxisAlignment: MainAxisAlignment.start)),
-      backgroundColor: Color(0xFFFFDFCD),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.camera_alt),
-        // Provide an onPressed callback.
-        onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
+    return MaterialApp(
+      home: Scaffold(
+        key: _scaffoldKey,
+        appBar: new PreferredSize(
+            preferredSize: const Size.fromHeight(200),
+            child: Row(children: [
+              // Navigation Back Button
+              IconButton(
+                iconSize: 48.0,
+                icon: Icon(Icons.arrow_back_ios_rounded),
+                onPressed: () {
+                  print('back button is pressed!!!');
+                  Navigator.of(context).pop();
+                },
+              ),
+            ], mainAxisAlignment: MainAxisAlignment.start)),
+        backgroundColor: Color(0xFFFFDFCD),
+        body: FutureBuilder<void>(
+          future: _initializeControllerFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              // If the Future is complete, display the preview.
+              return CameraPreview(_controller);
+            } else {
+              // Otherwise, display a loading indicator.
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Color(0xFF514949),
+          child: Icon(
+            Icons.camera_alt,
+            color: Color(0xFFFFDFCD),
+          ),
+          // Provide an onPressed callback.
+          onPressed: () async {
+            // Find the Scaffold in the widget tree and use
+            // it to show a SnackBar.
+            _scaffoldKey.currentState.showSnackBar(
+              SnackBar(
+                content: Text('Photo is saved'),
+                backgroundColor: Color(0xFF514949),
+                duration: Duration(milliseconds: 500),
+              ),
+            );
 
-            // Construct the path where the image should be saved using the
-            // pattern package.
-            filename = '${DateTime.now()}.png';
+            // Take the Picture in a try / catch block. If anything goes wrong,
+            // catch the error.
+            try {
+              // Ensure that the camera is initialized.
+              await _initializeControllerFuture;
 
-            // INFO: creating folder if not exists. this will move!!!
-            final myDir = new Directory(join(
-                (await getExternalStorageDirectory()).path,
-                'Media',
-                widget.companyName));
-            myDir.exists().then((isThere) {
-              if (isThere) {
-                print('exists: ' + myDir.path);
-              } else {
-                print('non-existent. Directory is creating...');
-                myDir.create(recursive: true).then((directory) {
-                  print('path:' + directory.path);
-                });
-              }
-            });
+              // Construct the path where the image should be saved using the
+              // pattern package.
+              filename = '${DateTime.now()}.png';
 
-            // Taking and saving picture to storage
-            await _controller
-                .takePicture(join(myDir.path, filename))
-                .then((value) => {
-                      // GallerySaver.saveImage(join(myDir.path, filename)),
-                      print('INFO: ' +
-                          filename +
-                          ' is saved to the ->' +
-                          myDir.path),
-                    });
+              // INFO: creating folder if not exists. this will move!!!
+              final myDir = new Directory(join(
+                  (await getExternalStorageDirectory()).path,
+                  'Media',
+                  widget.companyName));
+              myDir.exists().then((isThere) {
+                if (isThere) {
+                  print('exists: ' + myDir.path);
+                } else {
+                  print('non-existent. Directory is creating...');
+                  myDir.create(recursive: true).then((directory) {
+                    print('path:' + directory.path);
+                  });
+                }
+              });
 
-            // If the picture was taken, display it on a new screen.
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => DisplayPictureScreen(imagePath: path),
-            //   ),
-            // );
-          } catch (e) {
-            // If an error occurs, log the error to the console.
-            print(e);
-          }
-        },
+              // Taking and saving picture to storage
+              await _controller
+                  .takePicture(join(myDir.path, filename))
+                  .then((value) => {
+                        // GallerySaver.saveImage(join(myDir.path, filename)),
+                        print('INFO: ' +
+                            filename +
+                            ' is saved to the ->' +
+                            myDir.path),
+                      });
+
+              // If the picture was taken, display it on a new screen.
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => DisplayPictureScreen(imagePath: path),
+              //   ),
+              // );
+            } catch (e) {
+              // If an error occurs, log the error to the console.
+              print(e);
+            }
+          },
+        ),
       ),
     );
   }
@@ -175,3 +193,5 @@ class DisplayPictureScreen extends StatelessWidget {
     );
   }
 }
+
+// TODO: resolution selection button will be added.
