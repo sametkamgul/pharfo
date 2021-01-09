@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pharfo/displayImagePage.dart';
 import 'testcamera.dart';
 import 'dart:io';
 
@@ -102,7 +103,7 @@ class GalleryPageState extends State<GalleryPage> {
             // Gallery Section
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(5.0),
+                padding: EdgeInsets.all(10.0),
                 height: 200,
                 child: GridView.count(
                   // Create a grid with 2 columns. If you change the scrollDirection to
@@ -111,20 +112,26 @@ class GalleryPageState extends State<GalleryPage> {
                   // Generate 100 widgets that display their index in the List.
                   children: List.generate(fileList.length, (index) {
                     return Container(
-                      child: Image.file(
-                        fileList[index],
-                        // new File(
-                        //     '/storage/emulated/0/Android/data/com.example.pharfo/files/Media/Ege Üniversitesi/2021-01-03 03:30:23.235422.png'),
-                        fit: BoxFit.contain,
-                        alignment: Alignment.center,
+                      child: new FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => DisplayImagePage(
+                                    companyID: widget.companyID,
+                                    imagePath: fileList[index],
+                                  )));
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.file(
+                            fileList[index],
+                            // new File(
+                            //     '/storage/emulated/0/Android/data/com.example.pharfo/files/Media/Ege Üniversitesi/2021-01-03 03:30:23.235422.png'),
+                            fit: BoxFit.cover,
+                            width: MediaQuery.of(context).size.width / 3,
+                            alignment: Alignment.center,
+                          ),
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                          color: Color(0xFF514949),
-                          border: Border.all(
-                              color: Color(0xFF514949),
-                              width: 5.0,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.circular(20.0)),
                     );
                   }),
                 ),
