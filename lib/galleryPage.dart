@@ -118,6 +118,7 @@ class GalleryPageState extends State<GalleryPage> {
                               builder: (context) => DisplayImagePage(
                                     companyID: widget.companyID,
                                     imagePath: fileList[index],
+                                    locationInfo: null,
                                   )));
                         },
                         child: ClipRRect(

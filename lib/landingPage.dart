@@ -39,42 +39,53 @@ class LandingPageState extends State<LandingPage> {
   _listFoldersRefresh() async {
     // refresh page
     // companyList.clear();
-    print('ref p here...');
-    directory = (await getExternalStorageDirectory()).path;
+    // print('ref p here...');
+
+    directory = join((await getExternalStorageDirectory()).path, 'Media');
+    applicationDirectory = directory;
     folderList = Directory(directory)
         .listSync(recursive: true, followLinks: true)
         .toList();
-    for (int x = 0; x < folderList.length; x++) {
-      if (folderList[x] is Directory && folderList[x] != folderList[0]) {
-        print(x.toString() + ' ' + folderList[x].toString());
-        // companyList.add((folderList[x]).path);
-        print(folderList[x].toString() +
-            ' -- folder is added to the dynamic list');
-      } else {
-        // print(x.toString() + ' ' + folderList[x].toString());
-      }
-    }
 
-    for (int x = 1; x < folderList.length; x++) {
+    for (int x = 0; x < folderList.length; x++) {
       if (folderList.length > 1 && folderList[x] is Directory) {
         // there is a sub-folder
-        applicationDirectory = folderList[x].path;
-        var _t = applicationDirectory.split((folderList[0]).path).toString();
-        print(_t);
+        // applicationDirectory = folderList[x].path;
+        // print('dir:' + applicationDirectory);
+        // print(x.toString() + folderList[x].toString());
+        var _t = (folderList[x].path).split(applicationDirectory).toString();
+        // print(x.toString() + _t);
         _t = _t.substring(4, _t.length - 1);
         companyList.add(_t);
+        // print(companyList.toString());
         companyList = companyList.toSet().toList();
       } else {
         // null
       }
     }
 
-    // setState(() {});   //refresh page brute-froce
+    setState(() {}); //refresh page brute-froce
   }
 
   _getApplicationDirectory() async {
     String _dir = (await getExternalStorageDirectory()).path;
-    print('main dir is->' + _dir);
+    // print('main dir is->' + _dir);
+  }
+
+  _createMediaDirectory() async {
+    // INFO: creating folder if not exists. this will move!!!
+    final myDir = new Directory(
+        join((await getExternalStorageDirectory()).path, 'Media'));
+    myDir.exists().then((isThere) {
+      if (isThere) {
+        print('exists: ' + myDir.path);
+      } else {
+        print('non-existent. Directory is creating...');
+        myDir.create(recursive: true).then((directory) {
+          print('path:' + directory.path);
+        });
+      }
+    });
   }
 
   _createDirectories() async {
@@ -101,23 +112,30 @@ class LandingPageState extends State<LandingPage> {
         .toList();
     for (int x = 0; x < folderList.length; x++) {
       if (folderList[x] is Directory && folderList[x] == folderList[0]) {
-        print(x.toString() + ' ' + folderList[x].toString());
+        // print(x.toString() + ' ' + folderList[x].toString());
       } else {
         // print(x.toString() + ' ' + folderList[x].toString());
       }
     }
 
     // FIXME: refreshing the page here
-    // setState(() {});
+    setState(() {});
     return folderList;
   }
 
   @override
   Widget build(BuildContext context) {
-    // _createDirectories();
-    _getApplicationDirectory();
-    _listofFiles();
-    _listFoldersRefresh();
+    try {
+      _getApplicationDirectory();
+      _listofFiles();
+      _listFoldersRefresh();
+    } on FileSystemException {
+      print('Media directory is not found');
+      _createMediaDirectory();
+    } catch (e) {
+      print(e.toString());
+    }
+
     // print(folderList);
     // print(folderList.length);
     return Scaffold(
